@@ -1,17 +1,23 @@
 /**
- * CONFIGURAÇÃO CENTRAL DE LINKS DE CHECKOUT
- * Substitua pelas URLs da sua plataforma (Kiwify, Kirvano, Hotmart, PerfectPay, etc.)
+ * CONFIGURAÇÃO CENTRAL DE LINKS DE CHECKOUT (GGCHECKOUT)
  */
 const CHECKOUT_LINKS = {
   // Plano Completo Principal (R$ 27,90)
-  planoCompleto2790: "#checkout-completo-27-90",
+  planoCompleto2790: "https://ggcheckout.app/checkout/v5/sYUgTeJpQPzVGdGLdMW7Gh",
 
   // Oferta Especial de Upgrade no Pop-up (Do Básico pelo Completo por R$ 19,90)
-  upgradeEspecial1990: "#checkout-upgrade-premium-19-90",
+  upgradeEspecial1990: "https://ggcheckout.app/checkout/v5/XDHTStF3u8Ln0MGe48Sz7o",
 
   // Plano Básico Sem Bônus (R$ 14,90 - quando a cliente recusa o upgrade no pop-up)
-  planoBasico1490: "#checkout-basico-14-90"
+  planoBasico1490: "https://ggcheckout.app/checkout/v5/94F1qukZMUYALnoUw3zpzX"
 };
+
+function appendTrackingParams(url) {
+  const query = window.location.search;
+  if (!query) return url;
+  const separator = url.includes("?") ? "&" : "?";
+  return url + separator + query.substring(1);
+}
 
 document.addEventListener("DOMContentLoaded", () => {
   // 1. Data dinâmica na barra de urgência do topo
@@ -133,17 +139,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Botões de redirecionamento de Checkout
+  // Botões de redirecionamento de Checkout (com repasse automático de UTMs/fbclid)
   directPremiumBtns.forEach((btn) => {
-    btn.setAttribute("href", CHECKOUT_LINKS.planoCompleto2790);
+    btn.setAttribute("href", appendTrackingParams(CHECKOUT_LINKS.planoCompleto2790));
   });
 
   if (acceptUpgradeBtn) {
-    acceptUpgradeBtn.setAttribute("href", CHECKOUT_LINKS.upgradeEspecial1990);
+    acceptUpgradeBtn.setAttribute("href", appendTrackingParams(CHECKOUT_LINKS.upgradeEspecial1990));
   }
 
   if (declineUpgradeBtn) {
-    declineUpgradeBtn.setAttribute("href", CHECKOUT_LINKS.planoBasico1490);
+    declineUpgradeBtn.setAttribute("href", appendTrackingParams(CHECKOUT_LINKS.planoBasico1490));
   }
 
   // 6. Barra Flutuante Inferior após rolar a dobra principal
