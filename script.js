@@ -103,14 +103,24 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function warmUpCheckoutUrl(url) {
-    if (!url || document.querySelector(`link[data-prefetch="${url}"]`)) return;
+    if (!url || window.__warmedUrls?.[url]) return;
+    window.__warmedUrls = window.__warmedUrls || {};
+    window.__warmedUrls[url] = true;
+
+    // 1. Faz um ping real no-cors para acordar o servidor da ggCheckout (reduz o tempo de resposta deles de ~5.8s para ~0.2s)
+    fetch(url, { mode: "no-cors", credentials: "omit" }).catch(() => {});
+
+    // 2. Injeta prefetch no navegador
     const link = document.createElement("link");
     link.rel = "prefetch";
     link.href = url;
-    link.as = "document";
-    link.setAttribute("data-prefetch", url);
     document.head.appendChild(link);
   }
+
+  // Acorda os 3 links da ggCheckout em segundo plano 1.5s após abrir o site
+  setTimeout(() => {
+    Object.values(CHECKOUT_LINKS).forEach((url) => warmUpCheckoutUrl(url));
+  }, 1500);
 
   function openUpgradeModal(e) {
     if (e) e.preventDefault();
