@@ -102,6 +102,16 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 1000);
   }
 
+  function warmUpCheckoutUrl(url) {
+    if (!url || document.querySelector(`link[data-prefetch="${url}"]`)) return;
+    const link = document.createElement("link");
+    link.rel = "prefetch";
+    link.href = url;
+    link.as = "document";
+    link.setAttribute("data-prefetch", url);
+    document.head.appendChild(link);
+  }
+
   function openUpgradeModal(e) {
     if (e) e.preventDefault();
     if (!modal) return;
@@ -109,6 +119,9 @@ document.addEventListener("DOMContentLoaded", () => {
     modal.setAttribute("aria-hidden", "false");
     document.body.style.overflow = "hidden";
     startModalTimer();
+    // Pré-aquece os 2 checkouts do modal assim que ele abre
+    if (acceptUpgradeBtn) warmUpCheckoutUrl(acceptUpgradeBtn.href);
+    if (declineUpgradeBtn) warmUpCheckoutUrl(declineUpgradeBtn.href);
   }
 
   function closeUpgradeModal() {
@@ -139,18 +152,35 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Botões de redirecionamento de Checkout (com repasse automático de UTMs/fbclid)
-  directPremiumBtns.forEach((btn) => {
-    btn.setAttribute("href", appendTrackingParams(CHECKOUT_LINKS.planoCompleto2790));
+  // Pré-aquecimento no toque/hover + Feedback visual instantâneo no clique
+  const allCheckoutBtns = [
+    ...directPremiumBtns,
+    ...(acceptUpgradeBtn ? [acceptUpgradeBtn] : []),
+    ...(declineUpgradeBtn ? [declineUpgradeBtn] : [])
+  ];
+
+  allCheckoutBtns.forEach((btn) => {
+    // Caso não esteja usando Utmify na URL local, preserva query string sem sobrescrever o que a Utmify já injetou
+    if (window.location.search && !btn.getAttribute("href").includes("?")) {
+      btn.setAttribute("href", appendTrackingParams(btn.getAttribute("href")));
+    }
+
+    // Ao encostar o dedo (mobile) ou passar o mouse (PC), já pré-carrega a página de destino
+    ["mouseenter", "touchstart"].forEach((evt) => {
+      btn.addEventListener(evt, () => warmUpCheckoutUrl(btn.href), { passive: true, once: true });
+    });
+
+    // Feedback visual imediato no milissegundo do clique
+    btn.addEventListener("click", () => {
+      const span = btn.querySelector("span");
+      if (span) {
+        span.textContent = "⏳ ABRINDO CHECKOUT SEGURO...";
+      } else {
+        btn.textContent = "⏳ Abrindo checkout...";
+      }
+      btn.style.opacity = "0.92";
+    });
   });
-
-  if (acceptUpgradeBtn) {
-    acceptUpgradeBtn.setAttribute("href", appendTrackingParams(CHECKOUT_LINKS.upgradeEspecial1990));
-  }
-
-  if (declineUpgradeBtn) {
-    declineUpgradeBtn.setAttribute("href", appendTrackingParams(CHECKOUT_LINKS.planoBasico1490));
-  }
 
   // 6. Barra Flutuante Inferior após rolar a dobra principal
   const stickyBar = document.getElementById("sticky-cta-bar");

@@ -6,8 +6,36 @@
   <title>70 Sopinhas Desinflamatórias para Mulheres 40+ | Secar até 4,5 kg em 21 Dias</title>
   <meta name="description" content="Tenha acesso a 70 sopinhas desinflamatórias, cremosas e saborosas para desinchar a barriga, organizar seus jantares e secar até 4,5 kg em 21 dias sem passar fome à noite." />
 
+  <!-- Preconnect Instantâneo para o Checkout e Rastreamento (Zero Delay no Clique) -->
+  <link rel="preconnect" href="https://ggcheckout.app" crossorigin />
+  <link rel="dns-prefetch" href="https://ggcheckout.app" />
+  <link rel="preconnect" href="https://cdn.utmify.com.br" crossorigin />
+  <link rel="dns-prefetch" href="https://cdn.utmify.com.br" />
+
   <!-- Preload da Imagem Principal da Primeira Dobra (LCP Instantâneo) -->
   <link rel="preload" as="image" href="assets/images/hero-mockup-70.webp" fetchpriority="high" />
+
+  <!-- Speculation Rules API: Pré-carrega o Checkout antes mesmo do clique concluir -->
+  <script type="speculationrules">
+  {
+    "prerender": [
+      {
+        "where": { "href_matches": "https://ggcheckout.app/*" },
+        "eagerness": "moderate"
+      }
+    ],
+    "prefetch": [
+      {
+        "urls": [
+          "https://ggcheckout.app/checkout/v5/sYUgTeJpQPzVGdGLdMW7Gh",
+          "https://ggcheckout.app/checkout/v5/XDHTStF3u8Ln0MGe48Sz7o",
+          "https://ggcheckout.app/checkout/v5/94F1qukZMUYALnoUw3zpzX"
+        ],
+        "eagerness": "eager"
+      }
+    ]
+  }
+  </script>
 
   <!-- Google Fonts: Montserrat (700/800/900) + Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
