@@ -163,8 +163,10 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Pré-aquecimento no toque/hover + Feedback visual instantâneo no clique
+  const directBasicoBtns = document.querySelectorAll("[data-checkout-basico]");
   const allCheckoutBtns = [
     ...directPremiumBtns,
+    ...directBasicoBtns,
     ...(acceptUpgradeBtn ? [acceptUpgradeBtn] : []),
     ...(declineUpgradeBtn ? [declineUpgradeBtn] : [])
   ];
